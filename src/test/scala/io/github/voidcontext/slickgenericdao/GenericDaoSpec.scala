@@ -18,7 +18,7 @@ class GenericDaoSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
     val db: Database = h2db
   }
 
-  val Users = UsersFactory()
+  val Users = UsersFactory.Users
 
   import UsersFactory.driver.api._
 

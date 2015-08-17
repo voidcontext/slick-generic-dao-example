@@ -18,11 +18,8 @@ trait UsersFactory { this: DatabaseComponent with DriverComponent =>
     def * = (id.?, firstName, lastName) <> (User.tupled, User.unapply)
   }
 
-  object Users extends GenericDao(driver, db) {
+  object Users extends GenericDao[UserTable](driver, db) {
     import this.driver.api._
-
-    type Entity = User
-    type EntityTable = UserTable
 
     val table = TableQuery[UserTable]
     def getId(table: UserTable) = table.id
