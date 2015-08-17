@@ -1,15 +1,16 @@
 package io.github.voidcontext.slickgenericdao
 
-case class User(
-  id: Option[Long],
-  firstName: String,
-  lastName: String
-)
 
-trait UsersFactory { this: DatabaseComponent with DriverComponent =>
+trait UserActiveRecord { this: DatabaseComponent with DriverComponent =>
 
   import slick.lifted.Tag
   import driver.api._
+
+  case class User(
+    id: Option[Long],
+    firstName: String,
+    lastName: String
+  )
 
   class UserTable(tag: Tag) extends Table[User](tag, "user") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)

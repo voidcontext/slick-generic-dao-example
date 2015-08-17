@@ -9,18 +9,22 @@ import scala.concurrent.duration._
 class GenericDaoSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   val h2db = Database.forConfig("testDB")
   val h2Driver = slick.driver.H2Driver
-  object UsersFactory
-    extends UsersFactory
-    with DriverComponent
+
+  trait TestDAL
+    extends DriverComponent
     with DatabaseComponent {
 
     val driver = h2Driver
     val db: Database = h2db
   }
 
-  val Users = UsersFactory.Users
+  object UserActiveRecord
+    extends UserActiveRecord
+    with TestDAL
 
-  import UsersFactory.driver.api._
+
+  import UserActiveRecord._
+  import UserActiveRecord.driver.api._
 
   override def beforeAll = {
     val schema = Users.table.schema
