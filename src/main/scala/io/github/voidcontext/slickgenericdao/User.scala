@@ -7,6 +7,7 @@ case class User(
 )
 
 trait UsersFactory { this: DatabaseComponent with DriverComponent =>
+
   import slick.lifted.Tag
   import driver.api._
 
@@ -18,7 +19,7 @@ trait UsersFactory { this: DatabaseComponent with DriverComponent =>
     def * = (id.?, firstName, lastName) <> (User.tupled, User.unapply)
   }
 
-  object Users extends GenericDao[UserTable](driver, db) {
+  object Users extends GenericDao[UserTable, Long](driver, db) {
     import this.driver.api._
 
     val table = TableQuery[UserTable]
