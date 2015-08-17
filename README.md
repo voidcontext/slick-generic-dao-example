@@ -15,20 +15,6 @@ Maybe it will be useful later, for someone.
 - [Slick multidb examples - Cake Pattern](https://github.com/typesafehub/activator-slick-multidb/tree/slick-3.0/src/main/scala/cake)
 - [active-slick implementation](https://github.com/strongtyped/active-slick)
 
-### Notice
-
-This example doesn't compile right now, it gives the following error:
-
-```
-[info] Compiling 4 Scala sources to /home/pgee/dev/slick-generic-dao-example/target/scala-2.11/classes...
-[error] /home/pgee/dev/slick-generic-dao-example/src/main/scala/io/github/voidcontext/slickgenericdao/User.scala:25: overriding type EntityTable in class GenericDao with bounds <: io.github.voidcontext.slickgenericdao.UsersFactory.Users.driver.api.Table[io.github.voidcontext.slickgenericdao.UsersFactory.Users.Entity];
-[error]  type EntityTable has incompatible type
-[error]     type EntityTable = UserTable
-[error]          ^
-[error] one error found
-[error] (compile:compileIncremental) Compilation failed
-```
-
 ### License
 
 The MIT License (MIT)
