@@ -47,6 +47,18 @@ class GenericDaoSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   it should "find a user by id" in {
     val future =  Users.findById(1)
     val userOption = Await.result(future, 1.seconds)
-    userOption shouldBe User(Some(1L), "Foo", "Bar" )
+    userOption shouldBe Some(User(Some(1L), "Foo", "Bar" ))
+  }
+
+  it should "insert a new user" in {
+    val user = User(None, "Test", "User")
+    val insertedRows = Await.result(Users.insert(user), 1.seconds)
+    insertedRows shouldBe 1
+
+    val future =  Users.findById(2)
+    val userOption = Await.result(future, 1.seconds)
+    userOption shouldBe Some(User(Some(2), "Test", "User" ))
+
+    Await.result(h2db run Users.table.size.result, 1.seconds) shouldBe 2
   }
 }
