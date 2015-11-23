@@ -1,7 +1,7 @@
 package io.github.voidcontext.slickgenericdao
 
 
-trait UserActiveRecord { this: DatabaseComponent with DriverComponent =>
+trait UserComponent { this: DatabaseComponent with DriverComponent =>
 
   import slick.lifted.Tag
   import driver.api._
@@ -20,7 +20,7 @@ trait UserActiveRecord { this: DatabaseComponent with DriverComponent =>
     def * = (id.?, firstName, lastName) <> (User.tupled, User.unapply)
   }
 
-  object Users extends GenericDao[UserTable, Long](driver, db) {
+  object UserRepository extends Repository[UserTable, Long](driver, db) {
     import this.driver.api._
 
     val table = TableQuery[UserTable]

@@ -5,7 +5,7 @@ import slick.jdbc.JdbcBackend.Database
 import slick.lifted.AbstractTable
 import slick.ast.BaseTypedType
 
-abstract class GenericDao[T <: AbstractTable[_], I: BaseTypedType](val driver: JdbcDriver, val db: Database) {
+abstract class Repository[T <: AbstractTable[_], I: BaseTypedType](val driver: JdbcDriver, val db: Database) {
   import driver.api._
 
   type Id = I

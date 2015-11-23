@@ -6,11 +6,11 @@ import io.github.voidcontext.slickgenericdao._
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class GenericDaoSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
+class UserRepositorySpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   val h2db = Database.forConfig("testDB")
   val h2Driver = slick.driver.H2Driver
 
-  trait TestDAL
+  trait H2Persistence
     extends DriverComponent
     with DatabaseComponent {
 
@@ -18,19 +18,19 @@ class GenericDaoSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
     val db: Database = h2db
   }
 
-  object UserActiveRecord
-    extends UserActiveRecord
-    with TestDAL
+  object H2UserComponent
+    extends UserComponent
+    with H2Persistence
 
 
-  import UserActiveRecord._
-  import UserActiveRecord.driver.api._
+  import H2UserComponent._
+  import H2UserComponent.driver.api._
 
   override def beforeAll = {
-    val schema = Users.table.schema
+    val schema = UserRepository.table.schema
     val f = h2db.run(DBIO.seq(
       schema.create,
-      Users.table += User(None, "Foo", "Bar")
+      UserRepository.table += User(None, "Foo", "Bar")
     ))
 
     Await.result(f, 1.seconds)
@@ -41,7 +41,7 @@ class GenericDaoSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   }
 
   it should "query users" in {
-    val query = Users.table
+    val query = UserRepository.table
     val usersList = Await.result(h2db run query.result, 1.seconds)
 
     usersList should not be empty
@@ -49,20 +49,20 @@ class GenericDaoSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   }
 
   it should "find a user by id" in {
-    val future =  Users.findById(1)
+    val future =  UserRepository.findById(1)
     val userOption = Await.result(future, 1.seconds)
     userOption shouldBe Some(User(Some(1L), "Foo", "Bar" ))
   }
 
   it should "insert a new user" in {
     val user = User(None, "Test", "User")
-    val insertedRows = Await.result(Users.insert(user), 1.seconds)
+    val insertedRows = Await.result(UserRepository.insert(user), 1.seconds)
     insertedRows shouldBe 1
 
-    val future =  Users.findById(2)
+    val future =  UserRepository.findById(2)
     val userOption = Await.result(future, 1.seconds)
     userOption shouldBe Some(User(Some(2), "Test", "User" ))
 
-    Await.result(h2db run Users.table.size.result, 1.seconds) shouldBe 2
+    Await.result(h2db run UserRepository.table.size.result, 1.seconds) shouldBe 2
   }
 }
