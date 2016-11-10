@@ -1,10 +1,12 @@
 package io.github.voidcontext.test.slickgenericdao
 
-import slick.jdbc.JdbcBackend.Database
-import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
 import io.github.voidcontext.slickgenericdao._
-import scala.concurrent.Await
+import org.scalatest.{BeforeAndAfterAll, FlatSpec, Matchers}
+import slick.jdbc.JdbcBackend.Database
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 class UserRepositorySpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   val h2db = Database.forConfig("testDB")
@@ -28,10 +30,16 @@ class UserRepositorySpec extends FlatSpec with Matchers with BeforeAndAfterAll {
 
   override def beforeAll = {
     val schema = UserRepository.table.schema
-    val f = h2db.run(DBIO.seq(
-      schema.create,
-      UserRepository.table += User(None, "Foo", "Bar")
-    ))
+    val f = h2db.run(DBIO.seq(schema.create)) flatMap { _ =>
+      h2db run UserRepository.table.size.result
+    } flatMap {
+      case 0 => h2db run (UserRepository.table += User(None, "Foo", "Bar")) map {
+        Some(_)
+      }
+      case _ => Future {
+        None
+      }
+    }
 
     Await.result(f, 1.seconds)
   }
@@ -64,5 +72,15 @@ class UserRepositorySpec extends FlatSpec with Matchers with BeforeAndAfterAll {
     userOption shouldBe Some(User(Some(2), "Test", "User" ))
 
     Await.result(h2db run UserRepository.table.size.result, 1.seconds) shouldBe 2
+  }
+
+  it should "delete an existing user" in {
+    val future =  UserRepository.deleteById(1)
+    val affectedRows = Await.result(future, 1.seconds)
+    affectedRows shouldBe 1
+
+    val userFuture =  UserRepository.findById(1)
+    val userOption = Await.result(userFuture, 1.seconds)
+    userOption shouldBe None
   }
 }
