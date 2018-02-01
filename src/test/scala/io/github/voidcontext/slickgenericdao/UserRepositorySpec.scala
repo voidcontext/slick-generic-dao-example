@@ -10,13 +10,13 @@ import scala.concurrent.{Await, Future}
 
 class UserRepositorySpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   val h2db = Database.forConfig("testDB")
-  val h2Driver = slick.driver.H2Driver
+  val h2Profile = slick.jdbc.H2Profile
 
   trait H2Persistence
-    extends DriverComponent
+    extends ProfileComponent
     with DatabaseComponent {
 
-    val driver = h2Driver
+    val profile = h2Profile
     val db: Database = h2db
   }
 
@@ -26,7 +26,7 @@ class UserRepositorySpec extends FlatSpec with Matchers with BeforeAndAfterAll {
 
 
   import H2UserComponent._
-  import H2UserComponent.driver.api._
+  import H2UserComponent.profile.api._
 
   override def beforeAll = {
     val schema = UserRepository.table.schema

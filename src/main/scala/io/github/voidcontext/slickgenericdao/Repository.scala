@@ -1,12 +1,12 @@
 package io.github.voidcontext.slickgenericdao
 
-import slick.driver.JdbcDriver
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcProfile
 import slick.jdbc.JdbcBackend.Database
 import slick.lifted.AbstractTable
-import slick.ast.BaseTypedType
 
-abstract class Repository[T <: AbstractTable[_], I: BaseTypedType](val driver: JdbcDriver, val db: Database) {
-  import driver.api._
+abstract class Repository[T <: AbstractTable[_], I: BaseTypedType](val profile: JdbcProfile, val db: Database) {
+  import profile.api._
 
   type Id = I
   def table: TableQuery[T]
@@ -25,8 +25,8 @@ abstract class Repository[T <: AbstractTable[_], I: BaseTypedType](val driver: J
   }
 
   private def buildDeleteAction(id: Id) = {
-    driver.createDeleteActionExtensionMethods(
-      driver.deleteCompiler.run(filterById(id).toNode).tree, ()
+    profile.createDeleteActionExtensionMethods(
+      profile.deleteCompiler.run(filterById(id).toNode).tree, ()
     )
   }
 }
